@@ -5,29 +5,29 @@
 #         self.left = left
 #         self.right = right
 class Solution:
-    def pre(self, node):
-        if not node.right:
-            return node
-        return self.pre(node.right)
+    def find(self, node):
+        while node.left:
+            node = node.left
+        return node
 
-    def solve(self, node, k):
+    def solve(self, node, key):
         if not node:
             return None
-        if node.val == k:
-            if not node.left and not node.right:
-                return None
-            if node.left and not node.right:
-                return node.left
-            if node.right and not node.left:
+        if node.val < key:
+            node.right = self.solve(node.right, key)
+        elif node.val > key:
+            node.left = self.solve(node.left, key)
+        elif node.val == key:
+            if not node.left:
                 return node.right
-            if node.left and node.right:
-                pre = self.pre(node.left)
-                node.val = pre.val
-                node.left = self.solve(node.left, pre.val)
-        if k < node.val:
-            return self.solve(node.left, k)
-        if k > node.val:
-            return self.solve(node.right, k)
+            elif not node.right:
+                return node.left
+            else:
+                mn = self.find(node.right)
+                # print(mn.val)
+                node.val = mn.val
+                node.right = self.solve(node.right, node.val)
+        return node
 
     def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
-        return self.solve(root, k)
+        return self.solve(root, key)
